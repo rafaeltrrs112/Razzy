@@ -1,0 +1,55 @@
+
+sheep.png
+size: 512,64
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+sheep0001
+  rotate: false
+  xy: 2, 2
+  size: 62, 48
+  orig: 62, 48
+  offset: 0, 0
+  index: -1
+sheep0002
+  rotate: false
+  xy: 66, 2
+  size: 62, 48
+  orig: 62, 48
+  offset: 0, 0
+  index: -1
+sheep0003
+  rotate: false
+  xy: 130, 2
+  size: 62, 48
+  orig: 62, 48
+  offset: 0, 0
+  index: -1
+sheep0004
+  rotate: false
+  xy: 194, 2
+  size: 62, 48
+  orig: 62, 48
+  offset: 0, 0
+  index: -1
+sheep0005
+  rotate: false
+  xy: 258, 2
+  size: 62, 48
+  orig: 62, 48
+  offset: 0, 0
+  index: -1
+sheep0006
+  rotate: false
+  xy: 322, 2
+  size: 62, 48
+  orig: 62, 48
+  offset: 0, 0
+  index: -1
+sheep0007
+  rotate: false
+  xy: 386, 2
+  size: 62, 48
+  orig: 62, 48
+  offset: 0, 0
+  index: -1
