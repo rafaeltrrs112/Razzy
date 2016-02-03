@@ -10,7 +10,7 @@ Example: `sdk.dir=/opt/android/sdk`
 
 ## Systems
 
-Collision detection and bullet generation and movement are all handled using implementations of Ashely ECS's Component Systems classes.
+Collision detection, bullet generation and movement are all handled using implementations of Ashely ECS's Component Systems classes.
 
 ## Purpose
 
