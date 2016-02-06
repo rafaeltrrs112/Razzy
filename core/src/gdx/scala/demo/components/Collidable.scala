@@ -11,3 +11,7 @@ class Collidable extends Component {
   var height : Option[Float] = None
 
 }
+
+object Collidable {
+  val Tag = "collidable"
+}

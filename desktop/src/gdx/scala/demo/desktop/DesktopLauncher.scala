@@ -2,7 +2,7 @@ package gdx.scala.demo.desktop
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
-import gdx.scala.demo.GdxScalaDemoGame
+import gdx.scala.demo.SpaceInvaders
 
 
 object DesktopLauncher {
@@ -10,7 +10,7 @@ object DesktopLauncher {
     val config: LwjglApplicationConfiguration = new LwjglApplicationConfiguration
     config.width = 1280
     config.height = 800
-    new LwjglApplication(new GdxScalaDemoGame, config)
+    new LwjglApplication(new SpaceInvaders, config)
 
   }
 }

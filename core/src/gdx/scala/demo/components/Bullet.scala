@@ -12,7 +12,7 @@ class Bullet extends Component {
   var originalPosition: Option[Point] = None
 }
 
-object BulletConst {
+object Bullet {
   val Speed: Int = 5
   val Tag: String = "bullet"
 }

@@ -1,13 +1,13 @@
-package gdx.scala.demo
-
+package gdx.scala.demo.character
 
 import java.util.{Timer, TimerTask}
 
-import com.badlogic.ashley.core.{Entity, ComponentMapper}
+import com.badlogic.ashley.core.{ComponentMapper, Entity}
 import com.badlogic.ashley.utils.ImmutableArray
-import gdx.scala.demo.components.Bullet
-import scala.collection.JavaConversions._
 import com.badlogic.gdx.utils.Array
+import gdx.scala.demo.components.Bullet
+
+import scala.collection.JavaConversions._
 /**
   * Created by rtorres on 2/2/2016.
   */
@@ -24,10 +24,9 @@ case class ShipTrigger(entities : ImmutableArray[Entity], componentMapper: Compo
     val allowTrigger = new java.util.TimerTask {
       override def run() : Unit = {
         canPull = true
-        println("Can shoot!")
       }
     }
-    timer.schedule(allowTrigger, 500L, 500L)
+    timer.schedule(allowTrigger, 200L, 200L)
     allowTrigger
   }
 

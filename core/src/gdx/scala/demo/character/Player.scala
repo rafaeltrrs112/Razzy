@@ -1,11 +1,11 @@
-package gdx.scala.demo
+package gdx.scala.demo.character
 
 import java.awt.Point
 
 import com.badlogic.ashley.core.Entity
-import com.badlogic.gdx.{Input, Gdx}
 import com.badlogic.gdx.physics.box2d.World
-import com.uwsoft.editor.renderer.components.sprite.{SpriteAnimationStateComponent, SpriteAnimationComponent}
+import com.badlogic.gdx.{Gdx, Input}
+import com.uwsoft.editor.renderer.components.sprite.{SpriteAnimationComponent, SpriteAnimationStateComponent}
 import com.uwsoft.editor.renderer.components.{DimensionsComponent, TransformComponent}
 import com.uwsoft.editor.renderer.scripts.IScript
 import com.uwsoft.editor.renderer.utils.ComponentRetriever

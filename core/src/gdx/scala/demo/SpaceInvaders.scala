@@ -7,11 +7,11 @@ import com.uwsoft.editor.renderer.SceneLoader
 import com.uwsoft.editor.renderer.resources.ResourceManager
 import com.badlogic.gdx.assets.AssetManager
 import com.uwsoft.editor.renderer.utils.ItemWrapper
-import gdx.scala.demo.components.{BulletConst, Bullet}
-import gdx.scala.demo.system.BulletSystem
-import scala.collection.JavaConversions._
+import gdx.scala.demo.character.Player
+import gdx.scala.demo.components.{Collidable, Bullet}
+import gdx.scala.demo.system.{CollisionSystem, BulletSystem}
 
-class GdxScalaDemoGame extends ApplicationAdapter {
+class SpaceInvaders extends ApplicationAdapter {
   private var sceneLoader: SceneLoader = null
   private val viewPort: FitViewport = new FitViewport(7.5f, 5f)
   private var resourceManager: ResourceManager = null
@@ -26,8 +26,11 @@ class GdxScalaDemoGame extends ApplicationAdapter {
   }
 
   def addSystems() : Unit = {
-    sceneLoader.addComponentsByTagName(BulletConst.Tag, classOf[Bullet])
+    sceneLoader.addComponentsByTagName(Bullet.Tag, classOf[Bullet])
+    sceneLoader.addComponentsByTagName(Collidable.Tag, classOf[Collidable])
+
     sceneLoader.getEngine.addSystem(BulletSystem(sceneLoader.getEngine, player))
+    sceneLoader.getEngine.addSystem(CollisionSystem(sceneLoader.getEngine, player))
   }
 
   def setPlayer(root : ItemWrapper) : Unit = {
