@@ -35,7 +35,7 @@ class SpaceInvaders extends ApplicationAdapter {
     sceneLoader.getEngine.addSystem(BulletSystem(sceneLoader.getEngine, player))
     sceneLoader.getEngine.addSystem(CollisionSystem(sceneLoader.getEngine, player))
     sceneLoader.getEngine.addSystem(EnemyMovementSystem(.5f, sceneLoader.getEngine))
-    sceneLoader.getEngine.addSystem(EnemyOffenseSystem(.5f))
+    sceneLoader.getEngine.addSystem(new EnemyOffenseSystem(sceneLoader.getEngine, player))
   }
 
   def setPlayer(root: ItemWrapper): Unit = {

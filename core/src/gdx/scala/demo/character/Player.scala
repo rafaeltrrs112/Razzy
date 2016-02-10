@@ -73,4 +73,6 @@ class Player(world: World, var trigger: Option[Trigger] = None) extends IScript 
   def width = dimensionsComponent.width
 
   def height = dimensionsComponent.height
+
+  def currentPosition = Point(x, y)
 }

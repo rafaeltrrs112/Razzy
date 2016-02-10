@@ -12,7 +12,7 @@ import gdx.scala.demo.components._
 import scala.collection.JavaConversions._
 
 
-class BulletSystem(engine: Engine, player: Player) extends IteratingSystem(Family.all(classOf[Bullet]).get) {
+class BulletSystem(engine: Engine, player: Player) extends IteratingSystem(Family.all(classOf[PlayerBullet]).get) {
   val playerBullets: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[PlayerBullet]).get)
 
   val enemyBullets: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[EnemyBullet]).get)
