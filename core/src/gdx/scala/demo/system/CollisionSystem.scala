@@ -3,10 +3,12 @@ package gdx.scala.demo.system
 import com.badlogic.ashley.core.{ComponentMapper, Entity, Family, Engine}
 import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.ashley.utils.ImmutableArray
+import com.badlogic.gdx.graphics.g2d.Animation
+import com.uwsoft.editor.renderer.components.sprite.{SpriteAnimationComponent, SpriteAnimationStateComponent}
 import com.uwsoft.editor.renderer.components.{DimensionsComponent, TransformComponent}
 import com.uwsoft.editor.renderer.utils.ComponentRetriever
 import gdx.scala.demo.character.Player
-import gdx.scala.demo.components.{Bullet, Point, Collidable}
+import gdx.scala.demo.components._
 import scala.collection.JavaConversions._
 
 object CollisionSystem {
@@ -15,36 +17,43 @@ object CollisionSystem {
 
 class CollisionSystem(engine: Engine, player: Player) extends IteratingSystem(Family.all(classOf[Collidable]).get) {
   val collidableMapper = ComponentMapper.getFor(classOf[Collidable])
-  val bulletMapper: ComponentMapper[Bullet] = ComponentMapper.getFor(classOf[Bullet])
+
+  val bulletMapper: ComponentMapper[PlayerBullet] = ComponentMapper.getFor(classOf[PlayerBullet])
   val transformMapper : ComponentMapper[TransformComponent] = ComponentMapper.getFor(classOf[TransformComponent])
+  val peonMapper: ComponentMapper[PeonComponent] = ComponentMapper.getFor(classOf[PeonComponent])
+
+  val spriteAnimStateMapper : ComponentMapper[SpriteAnimationStateComponent] = ComponentMapper.getFor(classOf[SpriteAnimationStateComponent])
+  val spriteAnimMapper : ComponentMapper[SpriteAnimationComponent] = ComponentMapper.getFor(classOf[SpriteAnimationComponent])
+
   val dimensionMapper : ComponentMapper[DimensionsComponent] = ComponentMapper.getFor(classOf[DimensionsComponent])
-  var collidableEntities = engine.getEntitiesFor(Family.all(classOf[Collidable]).get)
-  var bulletEntities: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[Bullet]).get)
+  val collidableEntities = engine.getEntitiesFor(Family.all(classOf[Collidable]).get)
+
+  var bulletEntities: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[PlayerBullet]).get)
+
   collidableEntities.foreach(setOriginalPosition)
-  println(collidableEntities.foreach(_.getComponents.foreach(println)))
-  var collisions = 0
 
   override def processEntity(entity: Entity, deltaTime: Float): Unit = {
-    val transformComponent = transformMapper.get(entity)
-    val collidableEntity = collidableMapper.get(entity)
-    updatePosition(collidableEntity, transformMapper.get(entity), dimensionMapper.get(entity))
-    bulletCollisionCheck(collidableEntity)
+    if(entity != null){
+      val collidableEntity = collidableMapper.get(entity)
+      updatePosition(collidableEntity, transformMapper.get(entity), dimensionMapper.get(entity))
+      bulletCollisionCheck(entity, collidableEntity)
+    }
   }
 
-  def nonBulletCollidables : Iterable[Entity] = {
-    engine.getEntitiesFor(Family.all(classOf[Collidable]).get).filterNot(isBullet)
+  def explosionState(entity : Entity) : Unit = {
+    val animationComponent = spriteAnimMapper.get(entity)
+    val animationStateComponent  = spriteAnimStateMapper.get(entity)
+    animationStateComponent.set(animationComponent.frameRangeMap.get("dead"), 0, Animation.PlayMode.LOOP)
   }
 
-  def isBullet(entity: Entity) : Boolean = entity.getComponent(classOf[Bullet]) != null
+  def isBullet(entity: Entity) : Boolean = entity.getComponent(classOf[PlayerBullet]) != null
 
-  //TODO : Update collision component position with the transform component's position
-  //TODO : Test collision system
-  //TODO : Create collidable trait to handle destruction of entities at collision
-  //TODO   i.e => if (collided) collidable.collideEvent(collidedWith : Collidable) = ??? etc...
-  def bulletCollisionCheck(collidable: Collidable): Boolean = {
-    val collidedEntities: Iterable[Entity] = bulletEntities.filter(collidesWith(collidable))
+  def bulletCollisionCheck(entity: Entity, collidable: Collidable): Boolean = {
+    val collidedEntities: Option[Entity] = bulletEntities.find(collidesWith(collidable))
     if (collidedEntities.nonEmpty) {
-      println("Collided!")
+      collidedEntities.foreach(reInitBullet)
+      explosionState(entity)
+      peonMapper.get(entity).isAlive = false
     } else {
     }
     false
@@ -76,5 +85,14 @@ class CollisionSystem(engine: Engine, player: Player) extends IteratingSystem(Fa
 
   def updatePosition(collidable : Collidable, transformComponent: TransformComponent, dimensionsComponent: DimensionsComponent) : Unit  = {
     collidable.position = Some(Point(transformComponent.x + dimensionsComponent.width / 2, transformComponent.y + dimensionsComponent.height / 2))
+  }
+
+  def reInitBullet(entity : Entity): Unit = {
+    val bullet: PlayerBullet = bulletMapper.get(entity)
+    val transformComponent: TransformComponent = transformMapper.get(entity)
+    transformComponent.y = bullet.originalPosition.get.y
+    transformComponent.x = bullet.originalPosition.get.x
+    bullet.inFlight = false
+    bullet.triggered = false
   }
 }

@@ -5,36 +5,40 @@ import java.util.{Timer, TimerTask}
 import com.badlogic.ashley.core.{ComponentMapper, Entity}
 import com.badlogic.ashley.utils.ImmutableArray
 import com.badlogic.gdx.utils.Array
-import gdx.scala.demo.components.Bullet
+import gdx.scala.demo.components.PlayerBullet
 
 import scala.collection.JavaConversions._
 /**
   * Created by rtorres on 2/2/2016.
   */
-trait Trigger {
+sealed trait Trigger {
   def pullTrigger() : Unit
 }
-case class ShipTrigger(entities : ImmutableArray[Entity], componentMapper: ComponentMapper[Bullet]) extends Trigger {
-  val bullets = new ImmutableArray[Bullet](new Array(entities.map(componentMapper.get).toArray))
+
+case class ShipTrigger(entities : ImmutableArray[Entity], componentMapper: ComponentMapper[PlayerBullet]) extends Trigger {
+  val bullets = new ImmutableArray[PlayerBullet](new Array(entities.map(componentMapper.get).toArray))
   var canPull = true
+
+  private val FireRate = 100L
   startTimer()
 
-  def startTimer() : TimerTask = {
+  private def startTimer() : TimerTask = {
     val timer = new Timer
     val allowTrigger = new java.util.TimerTask {
       override def run() : Unit = {
         canPull = true
       }
     }
-    timer.schedule(allowTrigger, 200L, 200L)
+    timer.schedule(allowTrigger, 0, FireRate)
     allowTrigger
   }
 
   override def pullTrigger(): Unit = {
-    val nextBullet = bullets find(_.inFlight == false)
+    val nextBullet = bullets.find(_.inFlight == false)
     if(nextBullet.isDefined && canPull) {
       nextBullet.get.triggered = true
     }
     canPull = false
   }
+
 }

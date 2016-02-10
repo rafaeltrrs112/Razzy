@@ -1,19 +1,32 @@
 package gdx.scala.demo.components
 
 import com.badlogic.ashley.core.Component
+import gdx.scala.demo.character.Direction
 
 
 /**
   * Bullet component object.
   */
-class Bullet extends Component {
+
+trait Bullet extends Component {
   var inFlight: Boolean = false
   var triggered: Boolean = false
   var originalPosition: Option[Point] = None
+  val direction : Direction = Direction.UP
 }
 
-object Bullet {
-  val Speed: Int = 5
+class PlayerBullet extends Bullet
+
+class EnemyBullet extends Bullet {
+  override val direction : Direction = Direction.DOWN
+}
+
+object EnemyBullet {
+  val Tag : String = "enemyBullet"
+}
+
+object PlayerBullet {
+  val Speed: Int = 10
   val Tag: String = "bullet"
 }
 

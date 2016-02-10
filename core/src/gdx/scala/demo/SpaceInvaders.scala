@@ -4,18 +4,19 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.{ApplicationAdapter, Gdx}
 import com.uwsoft.editor.renderer.SceneLoader
-import com.uwsoft.editor.renderer.resources.ResourceManager
-import com.badlogic.gdx.assets.AssetManager
 import com.uwsoft.editor.renderer.utils.ItemWrapper
 import gdx.scala.demo.character.Player
-import gdx.scala.demo.components.{Collidable, Bullet}
-import gdx.scala.demo.system.{CollisionSystem, BulletSystem}
+import gdx.scala.demo.components._
+import gdx.scala.demo.system.{EnemyOffenseSystem, BulletSystem, CollisionSystem, EnemyMovementSystem}
+
+object Window {
+  val Width: Float = 28
+  val Height: Float = 15
+}
 
 class SpaceInvaders extends ApplicationAdapter {
   private var sceneLoader: SceneLoader = null
-  private val viewPort: FitViewport = new FitViewport(7.5f, 5f)
-  private var resourceManager: ResourceManager = null
-  private var assetManager: AssetManager = null
+  private val viewPort: FitViewport = new FitViewport(Window.Width, Window.Height)
   private var player: Player = null
 
   override def create() {
@@ -25,20 +26,24 @@ class SpaceInvaders extends ApplicationAdapter {
     addSystems()
   }
 
-  def addSystems() : Unit = {
-    sceneLoader.addComponentsByTagName(Bullet.Tag, classOf[Bullet])
+  def addSystems(): Unit = {
+    sceneLoader.addComponentsByTagName(PlayerBullet.Tag, classOf[PlayerBullet])
     sceneLoader.addComponentsByTagName(Collidable.Tag, classOf[Collidable])
+    sceneLoader.addComponentsByTagName(Peon.Tag, classOf[PeonComponent])
+    sceneLoader.addComponentsByTagName(EnemyBullet.Tag, classOf[EnemyBullet])
 
     sceneLoader.getEngine.addSystem(BulletSystem(sceneLoader.getEngine, player))
     sceneLoader.getEngine.addSystem(CollisionSystem(sceneLoader.getEngine, player))
+    sceneLoader.getEngine.addSystem(EnemyMovementSystem(.5f, sceneLoader.getEngine))
+    sceneLoader.getEngine.addSystem(EnemyOffenseSystem(.5f))
   }
 
-  def setPlayer(root : ItemWrapper) : Unit = {
+  def setPlayer(root: ItemWrapper): Unit = {
     player = new Player(sceneLoader.world)
     root.getChild("player").addScript(player)
   }
 
-  def loadScene() : Unit = {
+  def loadScene(): Unit = {
     sceneLoader = new SceneLoader
     sceneLoader.loadScene("MainScene", viewPort)
   }
