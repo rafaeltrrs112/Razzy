@@ -10,8 +10,8 @@ import gdx.scala.demo.components._
 import gdx.scala.demo.system.{EnemyOffenseSystem, BulletSystem, CollisionSystem, EnemyMovementSystem}
 
 object Window {
-  val Width: Float = 28
-  val Height: Float = 15
+  val Width: Float = 32
+  val Height: Float = 34
 }
 
 class SpaceInvaders extends ApplicationAdapter {

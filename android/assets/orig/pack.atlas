@@ -1,33 +1,40 @@
 
 pack.png
-size: 256,128
+size: 512,256
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
+134
+  rotate: false
+  xy: 2, 30
+  size: 256, 224
+  orig: 256, 224
+  offset: 0, 0
+  index: -1
 bullet
   rotate: false
-  xy: 2, 2
+  xy: 260, 156
   size: 6, 12
   orig: 6, 12
   offset: 0, 0
   index: -1
 enemyBullet
   rotate: false
-  xy: 2, 16
+  xy: 2, 14
   size: 10, 14
   orig: 10, 14
   offset: 0, 0
   index: -1
 motherShip
   rotate: false
-  xy: 2, 32
+  xy: 260, 170
   size: 192, 84
   orig: 192, 84
   offset: 0, 0
   index: -1
 shieldShard
   rotate: false
-  xy: 196, 106
+  xy: 2, 2
   size: 12, 10
   orig: 12, 10
   offset: 0, 0

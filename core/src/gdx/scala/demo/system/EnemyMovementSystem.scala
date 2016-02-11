@@ -84,6 +84,7 @@ class EnemyMovementSystem(interval: Float, engine: Engine) extends IntervalSyste
   }
 
   def switchEntity(entity: Entity): Unit = {
+    Retriever.MainRetriever.transformMapper.get(entity).y -=   .5f
     directionSwitch(peonMapper.get(entity))
   }
 

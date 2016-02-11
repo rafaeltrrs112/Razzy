@@ -8,8 +8,8 @@ import gdx.scala.demo.SpaceInvaders
 object DesktopLauncher {
   def main(arg: Array[String]) {
     val config: LwjglApplicationConfiguration = new LwjglApplicationConfiguration
-    config.width = 1280
-    config.height = 800
+    config.width = 1700
+    config.height = 1600
     new LwjglApplication(new SpaceInvaders, config)
 
   }
