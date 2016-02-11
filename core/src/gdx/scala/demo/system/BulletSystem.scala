@@ -20,6 +20,8 @@ class BulletSystem(engine: Engine, player: Player) extends IteratingSystem(Famil
   val enemyBulletMapper: ComponentMapper[EnemyBullet] = ComponentMapper.getFor(classOf[EnemyBullet])
   val allBullets = playerBullets ++ enemyBullets
 
+  val shields = engine.getEntitiesFor(Family.all(classOf[Shield]).get)
+
   player.trigger = Some(ShipTrigger(playerBullets, playerBulletMapper))
 
   playerBullets.foreach(setOriginalPosition)
@@ -30,6 +32,28 @@ class BulletSystem(engine: Engine, player: Player) extends IteratingSystem(Famil
         processPlayerBullet(entity, deltaTime)
       case
         Some(enemyBullet: EnemyBullet) => println("Is an enemy bullet")
+    }
+
+    shields.foreach(destroyShields(_, entity))
+  }
+
+  def destroyShields(shieldEntity : Entity, bulletEntity : Entity) : Unit = {
+    val bulletTransform = Retriever.MainRetriever.transformMapper.get(bulletEntity)
+    val bulletDimension = Retriever.MainRetriever.dimensionsMapper.get(bulletEntity)
+
+    val shieldTransform = Retriever.MainRetriever.transformMapper.get(shieldEntity)
+    val shieldDimension = Retriever.MainRetriever.dimensionsMapper.get(shieldEntity)
+
+    val totalWidth = shieldDimension.width / 2 + bulletDimension.width / 2
+    val totalHeight = shieldDimension.height / 2 + bulletDimension.height / 2
+
+    val pointDistance = Point(bulletTransform.x, bulletTransform.y).dst(Point(shieldTransform.x, shieldTransform.y))
+    val colliding = pointDistance <= totalWidth || pointDistance <= totalHeight
+
+    if(colliding) {
+      engine.removeEntity(shieldEntity)
+      reInitBullet(playerBulletMapper.get(bulletEntity), bulletTransform)
+//      engine.removeEntity(bulletEntity)
     }
   }
 

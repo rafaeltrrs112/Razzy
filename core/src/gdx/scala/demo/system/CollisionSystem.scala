@@ -28,6 +28,7 @@ class CollisionSystem(engine: Engine, player: Player) extends IteratingSystem(Fa
   val dimensionMapper : ComponentMapper[DimensionsComponent] = ComponentMapper.getFor(classOf[DimensionsComponent])
   val collidableEntities = engine.getEntitiesFor(Family.all(classOf[Collidable]).get)
 
+
   var bulletEntities: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[PlayerBullet]).get)
 
   collidableEntities.foreach(setOriginalPosition)

@@ -31,6 +31,7 @@ class SpaceInvaders extends ApplicationAdapter {
     sceneLoader.addComponentsByTagName(Collidable.Tag, classOf[Collidable])
     sceneLoader.addComponentsByTagName(Peon.Tag, classOf[PeonComponent])
     sceneLoader.addComponentsByTagName(EnemyBullet.Tag, classOf[EnemyBullet])
+    sceneLoader.addComponentsByTagName(Shield.Tag, classOf[Shield])
 
     sceneLoader.getEngine.addSystem(BulletSystem(sceneLoader.getEngine, player))
     sceneLoader.getEngine.addSystem(CollisionSystem(sceneLoader.getEngine, player))

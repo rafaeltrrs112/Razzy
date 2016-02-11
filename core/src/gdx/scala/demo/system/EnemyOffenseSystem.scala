@@ -3,7 +3,7 @@ package gdx.scala.demo.system
 import java.util.{Timer, TimerTask}
 
 import com.badlogic.ashley.core.{ComponentMapper, Engine, Entity, Family}
-import com.badlogic.ashley.systems.{IteratingSystem}
+import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.ashley.utils.ImmutableArray
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.uwsoft.editor.renderer.components.sprite.{SpriteAnimationComponent, SpriteAnimationStateComponent}
@@ -23,23 +23,25 @@ case class DefaultRetriever(transformMapper: ComponentMapper[TransformComponent]
 object Retriever {
   val MainRetriever: DefaultRetriever = DefaultRetriever(ComponentMapper.getFor(classOf[TransformComponent]), ComponentMapper.getFor(classOf[DimensionsComponent]))
   val EnemyBulletMapper: ComponentMapper[EnemyBullet] = ComponentMapper.getFor(classOf[EnemyBullet])
-  val SpriteAnimationMapper : ComponentMapper[SpriteAnimationComponent] = ComponentMapper.getFor(classOf[SpriteAnimationComponent])
-  val SpriteAnimationStateMapper : ComponentMapper[SpriteAnimationStateComponent] = ComponentMapper.getFor(classOf[SpriteAnimationStateComponent])
-
+  val SpriteAnimationMapper: ComponentMapper[SpriteAnimationComponent] = ComponentMapper.getFor(classOf[SpriteAnimationComponent])
+  val SpriteAnimationStateMapper: ComponentMapper[SpriteAnimationStateComponent] = ComponentMapper.getFor(classOf[SpriteAnimationStateComponent])
 }
 
 object EnemyOffenseSystem {
-  def apply(engine: Engine, player : Player): EnemyOffenseSystem = new EnemyOffenseSystem(engine, player)
+  def apply(engine: Engine, player: Player): EnemyOffenseSystem = new EnemyOffenseSystem(engine, player)
 }
 
-class EnemyOffenseSystem(engine: Engine, player : Player) extends IteratingSystem(Family.all(classOf[EnemyBullet]).get) {
+class EnemyOffenseSystem(engine: Engine, player: Player) extends IteratingSystem(Family.all(classOf[EnemyBullet]).get) {
   private val enemyEntities: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[PeonComponent]).get)
   private val enemyBulletEntities: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[EnemyBullet]).get)
+  private val shields: ImmutableArray[Entity] = engine.getEntitiesFor(Family.all(classOf[Shield]).get)
+
   enemyBulletEntities.foreach(setOriginalPosition)
-  private def startTimer() : TimerTask = {
+
+  private def startTimer(): TimerTask = {
     val timer = new Timer
     val allowTrigger = new java.util.TimerTask {
-      override def run() : Unit = {
+      override def run(): Unit = {
         println(enemyEntities.size())
         val randIndex = Random.nextInt(enemyEntities.size)
 
@@ -66,27 +68,41 @@ class EnemyOffenseSystem(engine: Engine, player : Player) extends IteratingSyste
     timer.schedule(allowTrigger, 500l, 100l)
     allowTrigger
   }
+
   startTimer()
 
-//  def updateInterval(): Unit = {
-//
-//    /*
-//     * Update all bullets that are in-flight. This should update in interval fashion.
-//     * This system will need to inter-op with a system that can do fluid updates.
-//     */
-////    enemyBulletEntities.get.foreach(updateBullet)
-//
-//  }
 
   override def processEntity(entity: Entity, deltaTime: Float): Unit = {
     updateBullet(entity, deltaTime)
+    shields.foreach(destroyShields(_, entity))
+  }
+
+
+  def destroyShields(shieldEntity: Entity, bulletEntity: Entity): Unit = {
+    val bulletTransform = Retriever.MainRetriever.transformMapper.get(bulletEntity)
+    val bulletDimension = Retriever.MainRetriever.dimensionsMapper.get(bulletEntity)
+
+    val shieldTransform = Retriever.MainRetriever.transformMapper.get(shieldEntity)
+    val shieldDimension = Retriever.MainRetriever.dimensionsMapper.get(shieldEntity)
+
+    val totalWidth = shieldDimension.width / 2 + bulletDimension.width / 2
+    val totalHeight = shieldDimension.height / 2 + bulletDimension.height / 2
+
+    val pointDistance = Point(bulletTransform.x, bulletTransform.y).dst(Point(shieldTransform.x, shieldTransform.y))
+    val colliding = pointDistance <= totalWidth || pointDistance <= totalHeight
+
+    if (colliding) {
+      engine.removeEntity(shieldEntity)
+      reInitBullet(Retriever.EnemyBulletMapper.get(bulletEntity), bulletTransform)
+      //      engine.removeEntity(bulletEntity)
+    }
   }
 
 
   def playBullet(enemyEntity: Entity, bulletEntity: Entity): Unit = {
     val bulletTransform: TransformComponent = Retriever.MainRetriever.transformMapper.get(bulletEntity)
 
-//    if (inView(bulletTransform)) println("In view")
+    //    if (inView(bulletTransform)) println("In view")
     /*updateBullet(bulletEntity)*/
   }
 
@@ -109,25 +125,25 @@ class EnemyOffenseSystem(engine: Engine, player : Player) extends IteratingSyste
 
   def notInFlight(entity: Entity): Boolean = !Retriever.EnemyBulletMapper.get(entity).inFlight
 
-  def updateBullet(entity: Entity, deltaTime : Float): Unit = {
+  def updateBullet(entity: Entity, deltaTime: Float): Unit = {
     val transformComponent = Retriever.MainRetriever.transformMapper.get(entity)
     val bulletComponent = Retriever.EnemyBulletMapper.get(entity)
 
     inView(transformComponent) match {
       case true =>
         transformComponent.y -= (PlayerBullet.Speed * deltaTime)
-        if(collidesWithPlayer(player, entity)) explosionState(player.player)
+        if (collidesWithPlayer(player, entity)) explosionState(player.player)
       case false => reInitBullet(bulletComponent, transformComponent)
     }
   }
 
-  def explosionState(entity : Entity) : Unit = {
+  def explosionState(entity: Entity): Unit = {
     val animationComponent = Retriever.SpriteAnimationMapper.get(entity)
-    val animationStateComponent  = Retriever.SpriteAnimationStateMapper.get(entity)
+    val animationStateComponent = Retriever.SpriteAnimationStateMapper.get(entity)
     animationStateComponent.set(animationComponent.frameRangeMap.get("dead"), 0, Animation.PlayMode.LOOP)
   }
 
-  def collidesWithPlayer(player: Player, entity : Entity): Boolean = {
+  def collidesWithPlayer(player: Player, entity: Entity): Boolean = {
     val bulletDimensions = ComponentRetriever.get(entity, classOf[DimensionsComponent])
     val bulletTransformComp = Retriever.MainRetriever.transformMapper.get(entity)
     val bulletPosition = Point(bulletTransformComp.x + bulletDimensions.width / 2, bulletTransformComp.y + bulletDimensions.height / 2)
@@ -164,12 +180,6 @@ class EnemyOffenseSystem(engine: Engine, player : Player) extends IteratingSyste
     bulletTransform.y = enemyTransform.y - enemyDimension.height / 2
     bullet.inFlight = true
   }
-
-//  override def addedToEngine(engine: Engine) : Unit = {
-////    startTimer()
-////    println(this.entities)
-//    println(enemyEntities.size())
-//  }
 
 }
 
