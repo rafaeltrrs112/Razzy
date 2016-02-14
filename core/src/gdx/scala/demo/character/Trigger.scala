@@ -19,7 +19,7 @@ case class ShipTrigger(entities : ImmutableArray[Entity], componentMapper: Compo
   val bullets = new ImmutableArray[PlayerBullet](new Array(entities.map(componentMapper.get).toArray))
   var canPull = true
 
-  private val FireRate = 100L
+  private val FireRate = 200L
   startTimer()
 
   private def startTimer() : TimerTask = {

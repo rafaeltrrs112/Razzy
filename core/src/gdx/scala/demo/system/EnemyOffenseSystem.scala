@@ -146,13 +146,13 @@ class EnemyOffenseSystem(engine: Engine, player: Player) extends IteratingSystem
   def collidesWithPlayer(player: Player, entity: Entity): Boolean = {
     val bulletDimensions = ComponentRetriever.get(entity, classOf[DimensionsComponent])
     val bulletTransformComp = Retriever.MainRetriever.transformMapper.get(entity)
-    val bulletPosition = Point(bulletTransformComp.x + bulletDimensions.width / 2, bulletTransformComp.y + bulletDimensions.height / 2)
+    val bulletPosition = Point(bulletTransformComp.x + bulletDimensions.width, bulletTransformComp.y + bulletDimensions.height)
 
     val bulletHeight = bulletDimensions.height
     val bulletWidth = bulletDimensions.width
 
-    val result = player.currentPosition.dst(bulletPosition) <= ((bulletHeight / 2) + (player.height / 2))
-    val result2 = player.currentPosition.dst(bulletPosition) <= ((bulletWidth / 2) + (player.width / 2))
+    val result = player.currentPosition.dst(bulletPosition) <= (bulletHeight + player.height)
+    val result2 = player.currentPosition.dst(bulletPosition) <= (bulletWidth + player.width)
 
     result || result2
   }

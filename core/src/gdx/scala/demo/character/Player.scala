@@ -46,7 +46,7 @@ class Player(world: World, var trigger: Option[Trigger] = None) extends IScript 
 
 
   def pollTriggerPull(delta: Float): Unit = {
-    if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && trigger.isDefined) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && trigger.isDefined) {
       trigger.get.pullTrigger()
     }
 
